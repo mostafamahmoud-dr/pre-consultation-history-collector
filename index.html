@@ -1,0 +1,1390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pre-Consultation Patient History Collector</title>
+  <style>
+    :root {
+      --color-bg: #f4f6f8;
+      --color-surface: #ffffff;
+      --color-border: #dbe1e8;
+      --color-text: #1f2933;
+      --color-muted: #5c6b7a;
+      --color-primary: #1e6091;
+      --color-primary-dark: #16496e;
+      --color-warning-bg: #fff8e1;
+      --color-warning-border: #f0c744;
+      --radius: 8px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0 0 3rem;
+      background: var(--color-bg);
+      color: var(--color-text);
+      font-family: "Segoe UI", Arial, sans-serif;
+      line-height: 1.5;
+    }
+
+    header {
+      background: var(--color-primary);
+      color: #fff;
+      padding: 1.75rem 1.5rem 1.25rem;
+      text-align: center;
+    }
+
+    header h1 {
+      margin: 0 0 0.25rem;
+      font-size: 1.6rem;
+    }
+
+    header p {
+      margin: 0;
+      font-size: 0.95rem;
+      color: #dceaf5;
+    }
+
+    .container {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 0 1rem;
+    }
+
+    .disclaimer {
+      background: var(--color-warning-bg);
+      border: 1px solid var(--color-warning-border);
+      border-radius: var(--radius);
+      padding: 1rem 1.25rem;
+      margin-top: 1.5rem;
+      font-size: 0.9rem;
+    }
+
+    .disclaimer strong {
+      display: block;
+      margin-bottom: 0.35rem;
+      font-size: 0.95rem;
+    }
+
+    form {
+      margin-top: 1.5rem;
+    }
+
+    section.form-section {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      padding: 1.25rem 1.5rem 1.5rem;
+      margin-bottom: 1.25rem;
+    }
+
+    section.form-section h2 {
+      margin-top: 0;
+      margin-bottom: 1rem;
+      font-size: 1.15rem;
+      color: var(--color-primary-dark);
+      border-bottom: 2px solid var(--color-border);
+      padding-bottom: 0.5rem;
+    }
+
+    .subheading {
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      color: var(--color-muted);
+      margin: 1.1rem 0 0.6rem;
+    }
+
+    .subheading:first-of-type {
+      margin-top: 0;
+    }
+
+    .field {
+      margin-bottom: 1rem;
+    }
+
+    .field:last-child {
+      margin-bottom: 0;
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      font-size: 0.9rem;
+      margin-bottom: 0.3rem;
+      color: var(--color-text);
+    }
+
+    .hint {
+      display: block;
+      font-weight: 400;
+      font-size: 0.78rem;
+      color: var(--color-muted);
+      margin-top: 0.15rem;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 0.55rem 0.65rem;
+      border: 1px solid var(--color-border);
+      border-radius: 6px;
+      font-size: 0.95rem;
+      font-family: inherit;
+      background: #fff;
+      color: var(--color-text);
+    }
+
+    textarea {
+      resize: vertical;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      outline: none;
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px rgba(30, 96, 145, 0.15);
+    }
+
+    .field-row {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .field-row .field {
+      flex: 1 1 200px;
+    }
+
+    .checkbox-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+      gap: 0.5rem 1rem;
+      margin-bottom: 0.9rem;
+    }
+
+    .checkbox-grid label {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      font-weight: 400;
+      font-size: 0.9rem;
+      margin-bottom: 0;
+    }
+
+    .checkbox-grid input[type="checkbox"] {
+      width: auto;
+      margin: 0;
+    }
+
+    .conditional-block {
+      border-left: 3px solid var(--color-primary);
+      background: #f7fafc;
+      padding: 0.9rem 1rem 0.1rem;
+      margin: 0.6rem 0 1rem;
+      border-radius: 0 6px 6px 0;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .actions {
+      text-align: center;
+      margin: 1.5rem 0;
+    }
+
+    button {
+      background: var(--color-primary);
+      color: #fff;
+      border: none;
+      padding: 0.75rem 1.75rem;
+      font-size: 1rem;
+      font-weight: 600;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.15s ease-in-out;
+    }
+
+    button:hover {
+      background: var(--color-primary-dark);
+    }
+
+    #summary-output {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      margin-top: 1rem;
+    }
+
+    #summary-output h2 {
+      margin-top: 0;
+      color: var(--color-primary-dark);
+    }
+
+    .summary-section {
+      margin-bottom: 1.25rem;
+    }
+
+    .summary-section:last-child {
+      margin-bottom: 0;
+    }
+
+    .summary-section h3 {
+      margin: 0 0 0.5rem;
+      font-size: 1rem;
+      color: var(--color-primary-dark);
+    }
+
+    .summary-section dl {
+      margin: 0;
+      display: grid;
+      grid-template-columns: minmax(140px, 240px) 1fr;
+      row-gap: 0.35rem;
+      column-gap: 1rem;
+    }
+
+    .summary-section dt {
+      font-weight: 600;
+      color: var(--color-muted);
+      font-size: 0.88rem;
+    }
+
+    .summary-section dd {
+      margin: 0;
+      font-size: 0.92rem;
+      white-space: pre-wrap;
+    }
+
+    .summary-timestamp {
+      font-size: 0.85rem;
+      color: var(--color-muted);
+      margin: 0 0 1.1rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .summary-actions {
+      margin-top: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    button.btn-secondary {
+      background: #fff;
+      color: var(--color-primary);
+      border: 1px solid var(--color-primary);
+    }
+
+    button.btn-secondary:hover {
+      background: #eaf2f8;
+    }
+
+    .copy-feedback {
+      font-size: 0.85rem;
+      color: var(--color-primary-dark);
+      font-weight: 600;
+    }
+
+    footer {
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--color-muted);
+      margin-top: 2rem;
+    }
+
+    @media print {
+      header, form, footer, .summary-actions {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Pre-Consultation Patient History Collector</h1>
+    <p>Please complete this form before your appointment</p>
+  </header>
+
+  <div class="container">
+
+    <div class="disclaimer">
+      <strong>Important disclaimer</strong>
+      This tool only collects the information you enter into a readable summary. It does not diagnose conditions,
+      does not give medical advice, and does not replace a consultation with a doctor or other qualified healthcare
+      professional. Always seek the advice of a physician for any medical concerns. Please use synthetic
+      (non-real) data only when testing this form &mdash; do not enter real patient information.
+    </div>
+
+    <form id="history-form">
+
+      <section class="form-section">
+        <h2>Personal Information</h2>
+
+        <div class="field">
+          <label for="full-name">Full name</label>
+          <input type="text" id="full-name" name="full-name">
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="age">Age</label>
+            <input type="number" id="age" name="age" min="0" max="120">
+          </div>
+
+          <div class="field">
+            <label for="sex">Sex</label>
+            <select id="sex" name="sex">
+              <option value="">Select&hellip;</option>
+              <option value="Female">Female</option>
+              <option value="Male">Male</option>
+              <option value="Other">Other</option>
+              <option value="Prefer not to say">Prefer not to say</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="marital-status">Marital status</label>
+            <select id="marital-status" name="marital-status">
+              <option value="">Select&hellip;</option>
+              <option value="Single">Single</option>
+              <option value="Married">Married</option>
+              <option value="Divorced">Divorced</option>
+              <option value="Widowed">Widowed</option>
+              <option value="Prefer not to say">Prefer not to say</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="occupation">Occupation</label>
+            <input type="text" id="occupation" name="occupation">
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="residence">Residence
+            <span class="hint">Town/city and area of residence</span>
+          </label>
+          <input type="text" id="residence" name="residence">
+        </div>
+
+        <p class="subheading">Special habits</p>
+
+        <div class="field">
+          <label for="smoking-status">Smoking</label>
+          <select id="smoking-status" name="smoking-status">
+            <option value="">Select&hellip;</option>
+            <option value="Never smoked">Never smoked</option>
+            <option value="Current smoker">Current smoker</option>
+            <option value="Ex-smoker">Ex-smoker</option>
+          </select>
+        </div>
+
+        <div id="smoking-amount-followup" class="conditional-block hidden">
+          <div class="field">
+            <label for="smoking-amount">Amount smoked
+              <span class="hint">e.g. cigarettes per day, or pack-years</span>
+            </label>
+            <input type="text" id="smoking-amount" name="smoking-amount">
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="alcohol-yn">Alcohol use?</label>
+          <select id="alcohol-yn" name="alcohol-yn">
+            <option value="">Select&hellip;</option>
+            <option value="No">No</option>
+            <option value="Yes">Yes</option>
+          </select>
+        </div>
+
+        <div id="alcohol-followup" class="conditional-block hidden">
+          <div class="field">
+            <label for="alcohol-amount">How much do you drink, and how often?
+              <span class="hint">e.g. units per week</span>
+            </label>
+            <input type="text" id="alcohol-amount" name="alcohol-amount">
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="otc-medication-yn">Regular use of over-the-counter medications?</label>
+          <select id="otc-medication-yn" name="otc-medication-yn">
+            <option value="">Select&hellip;</option>
+            <option value="No">No</option>
+            <option value="Yes">Yes</option>
+          </select>
+        </div>
+
+        <div id="otc-medication-followup" class="conditional-block hidden">
+          <div class="field">
+            <label for="otc-medication-detail">Which over-the-counter medicines do you take, and how often?</label>
+            <input type="text" id="otc-medication-detail" name="otc-medication-detail">
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="recreational-drug-yn">Recreational or illicit drug use?</label>
+          <select id="recreational-drug-yn" name="recreational-drug-yn">
+            <option value="">Select&hellip;</option>
+            <option value="No">No</option>
+            <option value="Yes">Yes</option>
+          </select>
+        </div>
+
+        <div id="recreational-drug-followup" class="conditional-block hidden">
+          <div class="field">
+            <label for="recreational-drug-detail">Which substances, and how often?</label>
+            <input type="text" id="recreational-drug-detail" name="recreational-drug-detail">
+          </div>
+        </div>
+      </section>
+
+      <section class="form-section">
+        <h2>Main Complaint</h2>
+
+        <div class="field">
+          <label for="main-complaint">What is the main reason for your visit?
+            <span class="hint">Describe in your own words</span>
+          </label>
+          <textarea id="main-complaint" name="main-complaint" rows="3"></textarea>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="complaint-duration">How long have you had this problem?</label>
+            <input type="text" id="complaint-duration" name="complaint-duration" placeholder="e.g. 3 days, 2 weeks">
+          </div>
+
+          <div class="field">
+            <label for="complaint-severity">How severe is it right now?</label>
+            <select id="complaint-severity" name="complaint-severity">
+              <option value="">Select&hellip;</option>
+              <option value="Mild">Mild</option>
+              <option value="Moderate">Moderate</option>
+              <option value="Severe">Severe</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="associated-symptoms-yn">Any other symptoms alongside the main complaint?</label>
+          <select id="associated-symptoms-yn" name="associated-symptoms-yn">
+            <option value="">Select&hellip;</option>
+            <option value="No">No</option>
+            <option value="Yes">Yes</option>
+          </select>
+        </div>
+
+        <div id="associated-symptoms-followup" class="conditional-block hidden">
+          <div class="field">
+            <label for="associated-symptoms-detail">Which other symptoms are you experiencing?</label>
+            <textarea id="associated-symptoms-detail" name="associated-symptoms-detail" rows="2"></textarea>
+          </div>
+        </div>
+      </section>
+
+      <section class="form-section">
+        <h2>Past Medical History</h2>
+
+        <p class="subheading">Chronic conditions</p>
+        <p class="hint" style="margin-bottom: 0.6rem;">Tick all that apply</p>
+
+        <div class="checkbox-grid">
+          <label><input type="checkbox" id="cc-diabetes" name="cc-diabetes"> Diabetes mellitus</label>
+          <label><input type="checkbox" id="cc-hypertension" name="cc-hypertension"> Hypertension</label>
+          <label><input type="checkbox" id="cc-asthma" name="cc-asthma"> Bronchial asthma</label>
+          <label><input type="checkbox" id="cc-heart-disease" name="cc-heart-disease"> Heart disease (angina, heart failure)</label>
+          <label><input type="checkbox" id="cc-stroke" name="cc-stroke"> Stroke / TIA</label>
+          <label><input type="checkbox" id="cc-ckd" name="cc-ckd"> Chronic kidney disease</label>
+          <label><input type="checkbox" id="cc-thyroid" name="cc-thyroid"> Thyroid disorder</label>
+          <label><input type="checkbox" id="cc-other" name="cc-other"> Other</label>
+        </div>
+
+        <div id="other-condition-wrapper" class="field hidden">
+          <label for="other-condition-text">Which other condition(s) do you have?</label>
+          <input type="text" id="other-condition-text" name="other-condition-text">
+        </div>
+
+        <p class="subheading">Hospital admissions</p>
+
+        <div class="field">
+          <label for="hospital-admissions-yn">Any previous hospital admissions?</label>
+          <select id="hospital-admissions-yn" name="hospital-admissions-yn">
+            <option value="">Select&hellip;</option>
+            <option value="No">No</option>
+            <option value="Yes">Yes</option>
+          </select>
+        </div>
+
+        <div id="admission-followup" class="conditional-block hidden">
+          <div class="field-row">
+            <div class="field">
+              <label for="admission-reason">Reason for admission</label>
+              <input type="text" id="admission-reason" name="admission-reason">
+            </div>
+            <div class="field">
+              <label for="admission-duration">Duration of admission</label>
+              <input type="text" id="admission-duration" name="admission-duration" placeholder="e.g. 4 days">
+            </div>
+          </div>
+        </div>
+
+        <p class="subheading">Surgical history</p>
+
+        <div class="field">
+          <label for="surgeries-yn">Any previous surgeries or procedures?</label>
+          <select id="surgeries-yn" name="surgeries-yn">
+            <option value="">Select&hellip;</option>
+            <option value="No">No</option>
+            <option value="Yes">Yes</option>
+          </select>
+        </div>
+
+        <div id="surgery-followup" class="conditional-block hidden">
+          <div class="field">
+            <label for="surgery-type">Type of procedure</label>
+            <input type="text" id="surgery-type" name="surgery-type">
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label for="surgery-date">Date
+                <span class="hint">Approximate is fine</span>
+              </label>
+              <input type="text" id="surgery-date" name="surgery-date">
+            </div>
+            <div class="field">
+              <label for="surgery-indication">Indication for surgery</label>
+              <input type="text" id="surgery-indication" name="surgery-indication">
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label for="surgery-outcome">Outcome</label>
+              <input type="text" id="surgery-outcome" name="surgery-outcome">
+            </div>
+            <div class="field">
+              <label for="surgery-location">Surgeon / hospital name and location</label>
+              <input type="text" id="surgery-location" name="surgery-location">
+            </div>
+          </div>
+          <div class="field">
+            <label for="surgery-complications">Any complications?
+              <span class="hint">Including anaesthetic complications or difficult intubation</span>
+            </label>
+            <input type="text" id="surgery-complications" name="surgery-complications">
+          </div>
+        </div>
+
+        <p class="subheading">Blood transfusion</p>
+
+        <div class="field">
+          <label for="blood-transfusion-yn">History of blood transfusion?</label>
+          <select id="blood-transfusion-yn" name="blood-transfusion-yn">
+            <option value="">Select&hellip;</option>
+            <option value="No">No</option>
+            <option value="Yes">Yes</option>
+          </select>
+        </div>
+
+        <div id="blood-transfusion-followup" class="conditional-block hidden">
+          <div class="field">
+            <label for="blood-transfusion-detail">What was the reason for the transfusion, and approximately when?</label>
+            <input type="text" id="blood-transfusion-detail" name="blood-transfusion-detail">
+          </div>
+        </div>
+
+        <p class="subheading">Immunisation</p>
+
+        <div class="field">
+          <label for="immunisation-status">Are your immunisations up to date?</label>
+          <select id="immunisation-status" name="immunisation-status">
+            <option value="">Select&hellip;</option>
+            <option value="Up to date">Up to date</option>
+            <option value="Not up to date">Not up to date</option>
+            <option value="Not sure">Not sure</option>
+          </select>
+        </div>
+
+        <div id="immunisation-followup" class="conditional-block hidden">
+          <div class="field">
+            <label for="immunisation-detail">Which vaccines are you missing, or why are you unsure?</label>
+            <input type="text" id="immunisation-detail" name="immunisation-detail">
+          </div>
+        </div>
+      </section>
+
+      <section class="form-section">
+        <h2>Drug History</h2>
+
+        <div class="field">
+          <label for="current-medications-yn">Currently taking any prescribed medications?</label>
+          <select id="current-medications-yn" name="current-medications-yn">
+            <option value="">Select&hellip;</option>
+            <option value="No">No</option>
+            <option value="Yes">Yes</option>
+          </select>
+        </div>
+
+        <div id="current-medications-followup" class="conditional-block hidden">
+          <div class="field">
+            <label for="current-medications-detail">Name, dose, route and frequency</label>
+            <textarea id="current-medications-detail" name="current-medications-detail" rows="3"></textarea>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="otc-supplements-yn">Taking any over-the-counter medicines, supplements, or herbal remedies?</label>
+          <select id="otc-supplements-yn" name="otc-supplements-yn">
+            <option value="">Select&hellip;</option>
+            <option value="No">No</option>
+            <option value="Yes">Yes</option>
+          </select>
+        </div>
+
+        <div id="otc-supplements-followup" class="conditional-block hidden">
+          <div class="field">
+            <label for="otc-supplements-detail">Which over-the-counter medicines, supplements, or herbal remedies, and how often?</label>
+            <textarea id="otc-supplements-detail" name="otc-supplements-detail" rows="2"></textarea>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="recent-antibiotics-yn">Any recent courses of antibiotics?</label>
+          <select id="recent-antibiotics-yn" name="recent-antibiotics-yn">
+            <option value="">Select&hellip;</option>
+            <option value="No">No</option>
+            <option value="Yes">Yes</option>
+          </select>
+        </div>
+
+        <div id="recent-antibiotics-followup" class="conditional-block hidden">
+          <div class="field">
+            <label for="recent-antibiotics-detail">Which antibiotic, and when</label>
+            <input type="text" id="recent-antibiotics-detail" name="recent-antibiotics-detail">
+          </div>
+        </div>
+      </section>
+
+      <section class="form-section">
+        <h2>Allergies</h2>
+
+        <div class="field">
+          <label for="drug-allergies-yn">Any drug allergies?</label>
+          <select id="drug-allergies-yn" name="drug-allergies-yn">
+            <option value="">Select&hellip;</option>
+            <option value="No">No</option>
+            <option value="Yes">Yes</option>
+          </select>
+        </div>
+
+        <div id="drug-allergies-followup" class="conditional-block hidden">
+          <div class="field">
+            <label for="drug-allergies-detail">Which medicine caused it, and what reaction did you have?</label>
+            <input type="text" id="drug-allergies-detail" name="drug-allergies-detail">
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="food-allergies-yn">Any food allergies?</label>
+          <select id="food-allergies-yn" name="food-allergies-yn">
+            <option value="">Select&hellip;</option>
+            <option value="No">No</option>
+            <option value="Yes">Yes</option>
+          </select>
+        </div>
+
+        <div id="food-allergies-followup" class="conditional-block hidden">
+          <div class="field">
+            <label for="food-allergies-detail">Which food caused it, and what reaction did you have?</label>
+            <input type="text" id="food-allergies-detail" name="food-allergies-detail">
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="other-allergies-yn">Any other allergies?
+            <span class="hint">e.g. insects, environmental factors, latex</span>
+          </label>
+          <select id="other-allergies-yn" name="other-allergies-yn">
+            <option value="">Select&hellip;</option>
+            <option value="No">No</option>
+            <option value="Yes">Yes</option>
+          </select>
+        </div>
+
+        <div id="other-allergies-followup" class="conditional-block hidden">
+          <div class="field">
+            <label for="other-allergies-detail">What are you allergic to, and what reaction did you have?</label>
+            <input type="text" id="other-allergies-detail" name="other-allergies-detail">
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="anaphylaxis-yn">History of anaphylaxis?
+            <span class="hint">e.g. hypotension, throat swelling, difficulty breathing, facial swelling</span>
+          </label>
+          <select id="anaphylaxis-yn" name="anaphylaxis-yn">
+            <option value="">Select&hellip;</option>
+            <option value="No">No</option>
+            <option value="Yes">Yes</option>
+          </select>
+        </div>
+
+        <div id="anaphylaxis-followup" class="conditional-block hidden">
+          <div class="field">
+            <label for="anaphylaxis-detail">What happened, and when?</label>
+            <textarea id="anaphylaxis-detail" name="anaphylaxis-detail" rows="2"></textarea>
+          </div>
+        </div>
+      </section>
+
+      <section class="form-section">
+        <h2>Family History</h2>
+
+        <p class="subheading">Major illnesses in immediate family</p>
+        <p class="hint" style="margin-bottom: 0.6rem;">Tick all that apply to a parent or sibling</p>
+
+        <div class="checkbox-grid">
+          <label><input type="checkbox" id="fh-diabetes" name="fh-diabetes"> Diabetes mellitus</label>
+          <label><input type="checkbox" id="fh-hypertension" name="fh-hypertension"> Hypertension</label>
+          <label><input type="checkbox" id="fh-heart-disease" name="fh-heart-disease"> Heart disease</label>
+          <label><input type="checkbox" id="fh-stroke" name="fh-stroke"> Stroke</label>
+          <label><input type="checkbox" id="fh-cancer" name="fh-cancer"> Cancer</label>
+          <label><input type="checkbox" id="fh-asthma-atopy" name="fh-asthma-atopy"> Asthma / atopy (eczema, hay fever)</label>
+          <label><input type="checkbox" id="fh-other" name="fh-other"> Other</label>
+        </div>
+
+        <div id="fh-other-wrapper" class="field hidden">
+          <label for="fh-other-text">Which other family illness(es)?</label>
+          <input type="text" id="fh-other-text" name="fh-other-text">
+        </div>
+
+        <div class="field">
+          <label for="family-hereditary-yn">Any known hereditary or genetic conditions?</label>
+          <select id="family-hereditary-yn" name="family-hereditary-yn">
+            <option value="">Select&hellip;</option>
+            <option value="No">No</option>
+            <option value="Yes">Yes</option>
+          </select>
+        </div>
+
+        <div id="family-hereditary-followup" class="conditional-block hidden">
+          <div class="field">
+            <label for="family-hereditary-detail">Which condition, and which family member has it?</label>
+            <input type="text" id="family-hereditary-detail" name="family-hereditary-detail">
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="family-early-death-yn">Any parent or sibling who died before the age of 65?</label>
+          <select id="family-early-death-yn" name="family-early-death-yn">
+            <option value="">Select&hellip;</option>
+            <option value="No">No</option>
+            <option value="Yes">Yes</option>
+          </select>
+        </div>
+
+        <div id="family-early-death-followup" class="conditional-block hidden">
+          <div class="field">
+            <label for="family-cause-of-death">Cause of death</label>
+            <input type="text" id="family-cause-of-death" name="family-cause-of-death">
+          </div>
+        </div>
+      </section>
+
+      <section class="form-section">
+        <h2>Nutritional History</h2>
+
+        <div class="field">
+          <label for="usual-weight">What is your usual weight?
+            <span class="hint">e.g. in kg</span>
+          </label>
+          <input type="text" id="usual-weight" name="usual-weight">
+        </div>
+
+        <div class="field">
+          <label for="weight-change-yn">Any recent change in your weight?</label>
+          <select id="weight-change-yn" name="weight-change-yn">
+            <option value="">Select&hellip;</option>
+            <option value="No">No</option>
+            <option value="Yes">Yes</option>
+          </select>
+        </div>
+
+        <div id="weight-change-followup" class="conditional-block hidden">
+          <div class="field-row">
+            <div class="field">
+              <label for="weight-change-direction">Weight gain or loss?</label>
+              <select id="weight-change-direction" name="weight-change-direction">
+                <option value="">Select&hellip;</option>
+                <option value="Gain">Gain</option>
+                <option value="Loss">Loss</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="weight-change-amount">How much, and over what time period?</label>
+              <input type="text" id="weight-change-amount" name="weight-change-amount">
+            </div>
+          </div>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="meals-per-day">How many meals do you eat per day?</label>
+            <input type="text" id="meals-per-day" name="meals-per-day">
+          </div>
+
+          <div class="field">
+            <label for="appetite-change">Any change in appetite?</label>
+            <select id="appetite-change" name="appetite-change">
+              <option value="">Select&hellip;</option>
+              <option value="No change">No change</option>
+              <option value="Increased">Increased</option>
+              <option value="Decreased">Decreased</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="special-diet">Are you on any restrictive or special diet?
+            <span class="hint">e.g. vegetarian, vegan, gluten-free, diabetic diet &mdash; leave blank if none</span>
+          </label>
+          <input type="text" id="special-diet" name="special-diet">
+        </div>
+      </section>
+
+      <section id="menstrual-section" class="form-section hidden">
+        <h2>Menstrual &amp; Obstetric History</h2>
+
+        <div class="field">
+          <label for="menarche-age">Age at menarche</label>
+          <input type="text" id="menarche-age" name="menarche-age">
+        </div>
+
+        <div class="field">
+          <label for="menopause-yn">Has the patient reached menopause?</label>
+          <select id="menopause-yn" name="menopause-yn">
+            <option value="">Select&hellip;</option>
+            <option value="No">No</option>
+            <option value="Yes">Yes</option>
+          </select>
+        </div>
+
+        <div id="menopause-followup" class="conditional-block hidden">
+          <div class="field">
+            <label for="menopause-age">Age at menopause</label>
+            <input type="text" id="menopause-age" name="menopause-age">
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="cycle-irregularity-yn">Irregular periods?</label>
+          <select id="cycle-irregularity-yn" name="cycle-irregularity-yn">
+            <option value="">Select&hellip;</option>
+            <option value="No">No</option>
+            <option value="Yes">Yes</option>
+          </select>
+        </div>
+
+        <div id="cycle-irregularity-followup" class="conditional-block hidden">
+          <div class="field">
+            <label for="cycle-irregularity-detail">Describe the pattern (e.g. how many days between periods, how much it varies)</label>
+            <textarea id="cycle-irregularity-detail" name="cycle-irregularity-detail" rows="2"></textarea>
+          </div>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="cycle-duration">Duration of periods
+              <span class="hint">Number of days</span>
+            </label>
+            <input type="text" id="cycle-duration" name="cycle-duration">
+          </div>
+
+          <div class="field">
+            <label for="cycle-amount">Amount of bleeding</label>
+            <select id="cycle-amount" name="cycle-amount">
+              <option value="">Select&hellip;</option>
+              <option value="Light">Light</option>
+              <option value="Moderate">Moderate</option>
+              <option value="Heavy">Heavy</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="contraceptive-yn">History of contraceptive pill or other contraceptive use?</label>
+          <select id="contraceptive-yn" name="contraceptive-yn">
+            <option value="">Select&hellip;</option>
+            <option value="No">No</option>
+            <option value="Yes">Yes</option>
+          </select>
+        </div>
+
+        <div id="contraceptive-followup" class="conditional-block hidden">
+          <div class="field">
+            <label for="contraceptive-detail">Which method, and since when</label>
+            <input type="text" id="contraceptive-detail" name="contraceptive-detail">
+          </div>
+        </div>
+      </section>
+
+      <section class="form-section">
+        <h2>Psychological History</h2>
+
+        <div class="field">
+          <label for="low-mood-yn">Have you felt low in mood or lost interest in things over the last two weeks?</label>
+          <select id="low-mood-yn" name="low-mood-yn">
+            <option value="">Select&hellip;</option>
+            <option value="No">No</option>
+            <option value="Yes">Yes</option>
+          </select>
+        </div>
+
+        <div id="low-mood-followup" class="conditional-block hidden">
+          <div class="field">
+            <label for="low-mood-detail">Tell us briefly how you've been feeling</label>
+            <textarea id="low-mood-detail" name="low-mood-detail" rows="2"></textarea>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="psych-history-yn">Any history of anxiety or psychiatric illness?</label>
+          <select id="psych-history-yn" name="psych-history-yn">
+            <option value="">Select&hellip;</option>
+            <option value="No">No</option>
+            <option value="Yes">Yes</option>
+          </select>
+        </div>
+
+        <div id="psych-history-followup" class="conditional-block hidden">
+          <div class="field">
+            <label for="psych-history-detail">What was diagnosed, when, and what treatment (if any)?</label>
+            <textarea id="psych-history-detail" name="psych-history-detail" rows="2"></textarea>
+          </div>
+        </div>
+      </section>
+
+      <section class="form-section">
+        <h2>Social History</h2>
+
+        <div class="field">
+          <label for="occupational-exposure-yn">Any occupation-related exposure?
+            <span class="hint">e.g. chemicals, dust, asbestos</span>
+          </label>
+          <select id="occupational-exposure-yn" name="occupational-exposure-yn">
+            <option value="">Select&hellip;</option>
+            <option value="No">No</option>
+            <option value="Yes">Yes</option>
+          </select>
+        </div>
+
+        <div id="occupational-exposure-followup" class="conditional-block hidden">
+          <div class="field">
+            <label for="occupational-exposure-detail">What substance or hazard, and for how long?</label>
+            <input type="text" id="occupational-exposure-detail" name="occupational-exposure-detail">
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="exercise-lifestyle">Exercise and general lifestyle</label>
+          <input type="text" id="exercise-lifestyle" name="exercise-lifestyle">
+        </div>
+
+        <div class="field">
+          <label for="living-situation">Living situation and support at home</label>
+          <input type="text" id="living-situation" name="living-situation">
+        </div>
+      </section>
+
+      <section class="form-section">
+        <h2>Ideas, Concerns &amp; Expectations</h2>
+
+        <div class="field">
+          <label for="ice-idea">What do you think is causing the problem?</label>
+          <textarea id="ice-idea" name="ice-idea" rows="2"></textarea>
+        </div>
+
+        <div class="field">
+          <label for="ice-concern">Is there anything in particular you are worried about?</label>
+          <textarea id="ice-concern" name="ice-concern" rows="2"></textarea>
+        </div>
+
+        <div class="field">
+          <label for="ice-expectation">What are you hoping we can do for you today?</label>
+          <textarea id="ice-expectation" name="ice-expectation" rows="2"></textarea>
+        </div>
+      </section>
+
+      <div class="actions">
+        <button type="button" id="generate-btn">Generate History</button>
+      </div>
+    </form>
+
+    <div id="summary-output" class="hidden">
+      <h2>Patient History Summary</h2>
+      <div id="summary-content"></div>
+      <div class="summary-actions">
+        <button type="button" id="print-summary-btn" class="btn-secondary">Print</button>
+        <button type="button" id="copy-summary-btn" class="btn-secondary">Copy</button>
+        <span id="copy-feedback" class="copy-feedback hidden">Copied to clipboard</span>
+      </div>
+    </div>
+
+    <footer>
+      For educational and demonstration purposes only. Not a medical device. Use synthetic data only.
+    </footer>
+
+  </div>
+
+  <script>
+    function val(id) {
+      const el = document.getElementById(id);
+      return el ? el.value.trim() : "";
+    }
+
+    function display(value) {
+      return value && value.length > 0 ? value : "Not provided";
+    }
+
+    function escapeHtml(value) {
+      const div = document.createElement("div");
+      div.textContent = value;
+      return div.innerHTML;
+    }
+
+    // Generic wiring for "select an option -> reveal a follow-up block" fields.
+    // triggerValues lists which selected values should reveal the follow-up block.
+    function wireReveal(selectId, followupId, triggerValues) {
+      const select = document.getElementById(selectId);
+      const followup = document.getElementById(followupId);
+      select.addEventListener("change", function () {
+        followup.classList.toggle("hidden", triggerValues.indexOf(this.value) === -1);
+      });
+    }
+
+    wireReveal("smoking-status", "smoking-amount-followup", ["Current smoker", "Ex-smoker"]);
+    wireReveal("alcohol-yn", "alcohol-followup", ["Yes"]);
+    wireReveal("otc-medication-yn", "otc-medication-followup", ["Yes"]);
+    wireReveal("recreational-drug-yn", "recreational-drug-followup", ["Yes"]);
+    wireReveal("associated-symptoms-yn", "associated-symptoms-followup", ["Yes"]);
+    wireReveal("hospital-admissions-yn", "admission-followup", ["Yes"]);
+    wireReveal("surgeries-yn", "surgery-followup", ["Yes"]);
+    wireReveal("blood-transfusion-yn", "blood-transfusion-followup", ["Yes"]);
+    wireReveal("current-medications-yn", "current-medications-followup", ["Yes"]);
+    wireReveal("otc-supplements-yn", "otc-supplements-followup", ["Yes"]);
+    wireReveal("recent-antibiotics-yn", "recent-antibiotics-followup", ["Yes"]);
+    wireReveal("drug-allergies-yn", "drug-allergies-followup", ["Yes"]);
+    wireReveal("food-allergies-yn", "food-allergies-followup", ["Yes"]);
+    wireReveal("other-allergies-yn", "other-allergies-followup", ["Yes"]);
+    wireReveal("anaphylaxis-yn", "anaphylaxis-followup", ["Yes"]);
+    wireReveal("family-hereditary-yn", "family-hereditary-followup", ["Yes"]);
+    wireReveal("family-early-death-yn", "family-early-death-followup", ["Yes"]);
+    wireReveal("sex", "menstrual-section", ["Female"]);
+    wireReveal("menopause-yn", "menopause-followup", ["Yes"]);
+    wireReveal("cycle-irregularity-yn", "cycle-irregularity-followup", ["Yes"]);
+    wireReveal("contraceptive-yn", "contraceptive-followup", ["Yes"]);
+    wireReveal("occupational-exposure-yn", "occupational-exposure-followup", ["Yes"]);
+    wireReveal("weight-change-yn", "weight-change-followup", ["Yes"]);
+    wireReveal("low-mood-yn", "low-mood-followup", ["Yes"]);
+    wireReveal("psych-history-yn", "psych-history-followup", ["Yes"]);
+    wireReveal("immunisation-status", "immunisation-followup", ["Not up to date", "Not sure"]);
+
+    document.getElementById("cc-other").addEventListener("change", function () {
+      document.getElementById("other-condition-wrapper").classList.toggle("hidden", !this.checked);
+    });
+
+    document.getElementById("fh-other").addEventListener("change", function () {
+      document.getElementById("fh-other-wrapper").classList.toggle("hidden", !this.checked);
+    });
+
+    // Summary generation
+
+    function chronicConditionsSummary() {
+      const conditions = [
+        ["cc-diabetes", "Diabetes mellitus"],
+        ["cc-hypertension", "Hypertension"],
+        ["cc-asthma", "Bronchial asthma"],
+        ["cc-heart-disease", "Heart disease (angina, heart failure)"],
+        ["cc-stroke", "Stroke / TIA"],
+        ["cc-ckd", "Chronic kidney disease"],
+        ["cc-thyroid", "Thyroid disorder"]
+      ];
+
+      const checked = conditions
+        .filter(function (c) { return document.getElementById(c[0]).checked; })
+        .map(function (c) { return c[1]; });
+
+      if (document.getElementById("cc-other").checked) {
+        const otherText = val("other-condition-text");
+        checked.push(otherText.length > 0 ? "Other: " + otherText : "Other (unspecified)");
+      }
+
+      return checked.length > 0 ? checked.join(", ") : "None reported";
+    }
+
+    function familyConditionsSummary() {
+      const conditions = [
+        ["fh-diabetes", "Diabetes mellitus"],
+        ["fh-hypertension", "Hypertension"],
+        ["fh-heart-disease", "Heart disease"],
+        ["fh-stroke", "Stroke"],
+        ["fh-cancer", "Cancer"],
+        ["fh-asthma-atopy", "Asthma / atopy (eczema, hay fever)"]
+      ];
+
+      const checked = conditions
+        .filter(function (c) { return document.getElementById(c[0]).checked; })
+        .map(function (c) { return c[1]; });
+
+      if (document.getElementById("fh-other").checked) {
+        const otherText = val("fh-other-text");
+        checked.push(otherText.length > 0 ? "Other: " + otherText : "Other (unspecified)");
+      }
+
+      return checked.length > 0 ? checked.join(", ") : "None reported";
+    }
+
+    // Pushes a yes/no row, and its detail row only when the answer is one of triggerValues.
+    function pushYesNo(rows, label, detailLabel, ynId, detailId, triggerValues) {
+      const answer = val(ynId);
+      rows.push([label, answer]);
+      if (triggerValues.indexOf(answer) !== -1) {
+        rows.push([detailLabel, val(detailId)]);
+      }
+    }
+
+    function isFemale() {
+      return val("sex") === "Female";
+    }
+
+    const summarySections = [
+      {
+        title: "Personal Information",
+        rows: function () {
+          const rows = [
+            ["Full name", val("full-name")],
+            ["Age", val("age")],
+            ["Sex", val("sex")],
+            ["Marital status", val("marital-status")],
+            ["Occupation", val("occupation")],
+            ["Residence", val("residence")]
+          ];
+          pushYesNo(rows, "Smoking", "Amount smoked", "smoking-status", "smoking-amount", ["Current smoker", "Ex-smoker"]);
+          pushYesNo(rows, "Alcohol use", "Alcohol amount", "alcohol-yn", "alcohol-amount", ["Yes"]);
+          pushYesNo(rows, "Over-the-counter medication use", "OTC medication details", "otc-medication-yn", "otc-medication-detail", ["Yes"]);
+          pushYesNo(rows, "Recreational drug use", "Recreational drug details", "recreational-drug-yn", "recreational-drug-detail", ["Yes"]);
+          return rows;
+        }
+      },
+      {
+        title: "Main Complaint",
+        rows: function () {
+          const rows = [
+            ["Main complaint", val("main-complaint")],
+            ["Duration", val("complaint-duration")],
+            ["Severity", val("complaint-severity")]
+          ];
+          pushYesNo(rows, "Other associated symptoms", "Associated symptoms details", "associated-symptoms-yn", "associated-symptoms-detail", ["Yes"]);
+          return rows;
+        }
+      },
+      {
+        title: "Past Medical History",
+        rows: function () {
+          const rows = [["Chronic conditions", chronicConditionsSummary()]];
+          pushYesNo(rows, "Previous hospital admissions", "Admission reason", "hospital-admissions-yn", "admission-reason", ["Yes"]);
+          if (val("hospital-admissions-yn") === "Yes") {
+            rows.push(["Admission duration", val("admission-duration")]);
+          }
+          pushYesNo(rows, "Previous surgeries or procedures", "Procedure type", "surgeries-yn", "surgery-type", ["Yes"]);
+          if (val("surgeries-yn") === "Yes") {
+            rows.push(["Procedure date", val("surgery-date")]);
+            rows.push(["Indication for surgery", val("surgery-indication")]);
+            rows.push(["Outcome", val("surgery-outcome")]);
+            rows.push(["Surgeon / hospital name and location", val("surgery-location")]);
+            rows.push(["Complications", val("surgery-complications")]);
+          }
+          pushYesNo(rows, "History of blood transfusion", "Blood transfusion details", "blood-transfusion-yn", "blood-transfusion-detail", ["Yes"]);
+          pushYesNo(rows, "Immunisation status", "Immunisation details", "immunisation-status", "immunisation-detail", ["Not up to date", "Not sure"]);
+          return rows;
+        }
+      },
+      {
+        title: "Drug History",
+        rows: function () {
+          const rows = [];
+          pushYesNo(rows, "Currently taking prescribed medications", "Medication details", "current-medications-yn", "current-medications-detail", ["Yes"]);
+          pushYesNo(rows, "Over-the-counter medicines, supplements or herbal remedies", "Details", "otc-supplements-yn", "otc-supplements-detail", ["Yes"]);
+          pushYesNo(rows, "Recent antibiotic courses", "Antibiotic details", "recent-antibiotics-yn", "recent-antibiotics-detail", ["Yes"]);
+          return rows;
+        }
+      },
+      {
+        title: "Allergies",
+        rows: function () {
+          const rows = [];
+          pushYesNo(rows, "Drug allergies", "Medicine and reaction", "drug-allergies-yn", "drug-allergies-detail", ["Yes"]);
+          pushYesNo(rows, "Food allergies", "Food and reaction", "food-allergies-yn", "food-allergies-detail", ["Yes"]);
+          pushYesNo(rows, "Other allergies", "Details", "other-allergies-yn", "other-allergies-detail", ["Yes"]);
+          pushYesNo(rows, "History of anaphylaxis", "Anaphylaxis details", "anaphylaxis-yn", "anaphylaxis-detail", ["Yes"]);
+          return rows;
+        }
+      },
+      {
+        title: "Family History",
+        rows: function () {
+          const rows = [["Major illnesses in immediate family", familyConditionsSummary()]];
+          pushYesNo(rows, "Hereditary or genetic conditions", "Details", "family-hereditary-yn", "family-hereditary-detail", ["Yes"]);
+          pushYesNo(rows, "Parent or sibling died before age 65", "Cause of death", "family-early-death-yn", "family-cause-of-death", ["Yes"]);
+          return rows;
+        }
+      },
+      {
+        title: "Nutritional History",
+        rows: function () {
+          const rows = [["Usual weight", val("usual-weight")]];
+          const weightChange = val("weight-change-yn");
+          rows.push(["Recent weight change", weightChange]);
+          if (weightChange === "Yes") {
+            rows.push(["Weight gain or loss", val("weight-change-direction")]);
+            rows.push(["Amount and time period", val("weight-change-amount")]);
+          }
+          rows.push(["Meals per day", val("meals-per-day")]);
+          rows.push(["Appetite change", val("appetite-change")]);
+          rows.push(["Restrictive or special diet", val("special-diet")]);
+          return rows;
+        }
+      },
+      {
+        title: "Menstrual & Obstetric History",
+        condition: isFemale,
+        rows: function () {
+          const rows = [["Age at menarche", val("menarche-age")]];
+          pushYesNo(rows, "Reached menopause", "Age at menopause", "menopause-yn", "menopause-age", ["Yes"]);
+          pushYesNo(rows, "Irregular periods", "Irregularity pattern", "cycle-irregularity-yn", "cycle-irregularity-detail", ["Yes"]);
+          rows.push(["Duration of periods", val("cycle-duration")]);
+          rows.push(["Amount of bleeding", val("cycle-amount")]);
+          pushYesNo(rows, "Contraceptive use", "Method and since when", "contraceptive-yn", "contraceptive-detail", ["Yes"]);
+          return rows;
+        }
+      },
+      {
+        title: "Psychological History",
+        rows: function () {
+          const rows = [];
+          pushYesNo(rows, "Low mood or loss of interest in the last two weeks", "Note", "low-mood-yn", "low-mood-detail", ["Yes"]);
+          pushYesNo(rows, "History of anxiety or psychiatric illness", "Diagnosis, dates and treatment", "psych-history-yn", "psych-history-detail", ["Yes"]);
+          return rows;
+        }
+      },
+      {
+        title: "Social History",
+        rows: function () {
+          const rows = [];
+          pushYesNo(rows, "Occupation-related exposure", "Exposure details", "occupational-exposure-yn", "occupational-exposure-detail", ["Yes"]);
+          rows.push(["Exercise and lifestyle", val("exercise-lifestyle")]);
+          rows.push(["Living situation and support at home", val("living-situation")]);
+          return rows;
+        }
+      },
+      {
+        title: "Ideas, Concerns & Expectations",
+        rows: function () {
+          return [
+            ["What the patient thinks is causing the problem", val("ice-idea")],
+            ["What the patient is worried about", val("ice-concern")],
+            ["What the patient is hoping for from this visit", val("ice-expectation")]
+          ];
+        }
+      }
+    ];
+
+    document.getElementById("generate-btn").addEventListener("click", function () {
+      let html = "";
+
+      const generatedAt = new Date();
+      html += '<p class="summary-timestamp"><strong>Generated on:</strong> ' + escapeHtml(generatedAt.toLocaleString()) + "</p>";
+
+      summarySections.forEach(function (section) {
+        if (section.condition && !section.condition()) {
+          return;
+        }
+
+        html += '<div class="summary-section">';
+        html += "<h3>" + escapeHtml(section.title) + "</h3>";
+        html += "<dl>";
+
+        section.rows().forEach(function (row) {
+          html += "<dt>" + escapeHtml(row[0]) + "</dt>";
+          html += "<dd>" + escapeHtml(display(row[1])) + "</dd>";
+        });
+
+        html += "</dl></div>";
+      });
+
+      document.getElementById("summary-content").innerHTML = html;
+      const output = document.getElementById("summary-output");
+      output.classList.remove("hidden");
+      output.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+
+    document.getElementById("print-summary-btn").addEventListener("click", function () {
+      window.print();
+    });
+
+    function fallbackCopyToClipboard(text) {
+      const textarea = document.createElement("textarea");
+      textarea.value = text;
+      textarea.style.position = "fixed";
+      textarea.style.opacity = "0";
+      document.body.appendChild(textarea);
+      textarea.focus();
+      textarea.select();
+      try {
+        document.execCommand("copy");
+      } catch (err) {
+        // Clipboard access unavailable; nothing more we can do.
+      }
+      document.body.removeChild(textarea);
+    }
+
+    document.getElementById("copy-summary-btn").addEventListener("click", function () {
+      const text = document.getElementById("summary-content").innerText;
+      const feedback = document.getElementById("copy-feedback");
+
+      function showFeedback() {
+        feedback.classList.remove("hidden");
+        setTimeout(function () {
+          feedback.classList.add("hidden");
+        }, 2000);
+      }
+
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(showFeedback).catch(function () {
+          fallbackCopyToClipboard(text);
+          showFeedback();
+        });
+      } else {
+        fallbackCopyToClipboard(text);
+        showFeedback();
+      }
+    });
+  </script>
+
+</body>
+</html>
